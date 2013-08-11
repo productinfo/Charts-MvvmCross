@@ -4,6 +4,8 @@ using MonoTouch.Foundation;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
+using ShinobiDemo.Core.ViewModels;
 
 namespace ShinobiDemo.Touch
 {
@@ -20,12 +22,22 @@ namespace ShinobiDemo.Touch
 			{
 			}
 
-			public BoundDataSource(IEnumerable<IEnumerable<ShinobiDemo.Core.ViewModels.DataPoint>> data)
+			public BoundDataSource(IEnumerable<IEnumerable<DataPoint>> data)
 			{
-				_data = new List<IList<SChartDataPoint>> ();
-				foreach(var series in data) {
-					var seriesPoints = new List <SChartDataPoint>(series);
-					_data.Add (seriesPoints);					
+				if(data != null) {
+					_data = new List<IList<SChartDataPoint>> ();
+					foreach(var series in data) {
+						var newSeries = series
+							.Select(dp => new SChartDataPoint()
+							        { XValue = new NSNumber(dp.XValue),
+									  YValue = new NSNumber(dp.YValue) })
+							.ToList();
+						_data.Add (newSeries);
+						UpdateSeries();
+					}
+				} else {
+					_data = null;
+					_series = null;
 				}
 			}
 
@@ -41,20 +53,37 @@ namespace ShinobiDemo.Touch
 			#region implemented abstract members of SChartDataSource
 			public override int GetNumberOfSeries (ShinobiChart chart)
 			{
-				return _data.Count;
+				if (_series != null) {
+					return _series.Count;
+				} else {
+					return 1;
+				}
+
 			}
 
 			public override SChartSeries GetSeries (ShinobiChart chart, int dataSeriesIndex)
 			{
-				return _series [dataSeriesIndex];
+				if (_series != null) {
+					return _series [dataSeriesIndex];
+				} else {
+					return new SChartLineSeries();
+				}
 			}
 			public override int GetNumberOfDataPoints (ShinobiChart chart, int dataSeriesIndex)
 			{
-				return _data [dataSeriesIndex].Count;
+				if (_data != null) {
+					return _data [dataSeriesIndex].Count;
+				} else {
+					return 0;
+				}
 			}
 			public override SChartData GetDataPoint (ShinobiChart chart, int dataIndex, int dataSeriesIndex)
 			{
-				return _data [dataSeriesIndex] [dataIndex];
+				if (_data != null) {
+					return _data [dataSeriesIndex] [dataIndex];
+				} else {
+					return null;
+				}
 			}
 			#endregion
 		}
@@ -73,17 +102,25 @@ namespace ShinobiDemo.Touch
 		public BoundShinobiChart(RectangleF frame)
 			: base(frame)
 		{
+			UpdateData ();
 		}
 
 		public BoundShinobiChart(RectangleF frame, SChartTheme theme)
 			: base(frame, theme)
 		{
 		}
+
+		public BoundShinobiChart(RectangleF frame, SChartAxisType xAxisType, SChartAxisType yAxisType)
+			: base(frame, xAxisType, yAxisType)
+		{
+			UpdateData();
+		}
+
 		#endregion
 
 		#region Properties for binding
-		private IEnumerable<IEnumerable<SChartDataPoint>> _data;
-		public IEnumerable<IEnumerable<SChartDataPoint>> Data {
+		private IEnumerable<IEnumerable<DataPoint>> _data;
+		public IEnumerable<IEnumerable<DataPoint>> Data {
 			get { return _data;}
 			set {
 				_data = value;
@@ -96,7 +133,7 @@ namespace ShinobiDemo.Touch
 		{
 			_boundDataSource = new BoundDataSource (_data);
 			this.DataSource = _boundDataSource;
-			this.ReloadData ();
+			this.RedrawChart ();
 		}
 	}
 }

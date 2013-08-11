@@ -51,6 +51,6 @@ Global
 		{49DADFFB-8F03-44BA-9A34-7109BB37A7C6}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ShinobiDemo.Core\ShinobiDemo.Core.csproj
+		StartupItem = ShinobiDemo.Touch\ShinobiDemo.Touch.csproj
 	EndGlobalSection
 EndGlobal

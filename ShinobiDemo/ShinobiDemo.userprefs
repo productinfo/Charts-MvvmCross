@@ -1,16 +1,21 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="ShinobiDemo.Core/ShinobiDemo.Core.csproj">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ShinobiDemo.Core/ViewModels/ChartViewModel.cs">
     <Files>
       <File FileName="ShinobiDemo.Touch/AppDelegate.cs" Line="35" Column="16" />
-      <File FileName="ShinobiDemo.Touch/Controls/BoundShinobiChart.cs" Line="98" Column="39" />
-      <File FileName="ShinobiDemo.Touch/Views/MyFirstView.cs" Line="18" Column="16" />
-      <File FileName="ShinobiDemo.Core/ViewModels/ChartViewModel.cs" Line="24" Column="16" />
-      <File FileName="ShinobiDemo.Core/ShinobiDemo.Core.csproj" Line="28" Column="30" />
+      <File FileName="ShinobiDemo.Touch/Controls/BoundShinobiChart.cs" Line="1" Column="1" />
+      <File FileName="ShinobiDemo.Touch/Views/MyFirstView.cs" Line="1" Column="1" />
+      <File FileName="ShinobiDemo.Core/ViewModels/ChartViewModel.cs" Line="11" Column="30" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
-        <State expanded="True" selected="True">
+        <State expanded="True">
+          <Node name="ShinobiDemo.Core" expanded="True">
+            <Node name="References" expanded="True">
+              <Node name="System" selected="True" />
+            </Node>
+            <Node name="ViewModels" expanded="True" />
+          </Node>
           <Node name="ShinobiDemo.Touch" expanded="True">
             <Node name="References" expanded="True" />
             <Node name="Controls" expanded="True" />

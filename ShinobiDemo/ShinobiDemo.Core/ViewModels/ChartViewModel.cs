@@ -1,7 +1,6 @@
 using System;
 using Cirrious.MvvmCross.ViewModels;
 using System.Collections.Generic;
-using ShinobiCharts;
 
 namespace ShinobiDemo.Core.ViewModels
 {
@@ -51,6 +50,12 @@ namespace ShinobiDemo.Core.ViewModels
 
 	public class DataPoint
 	{
+		public DataPoint (double xValue, double yValue)
+		{
+			this.XValue = xValue;
+			this.YValue = yValue;
+		}
+
 		private double _xValue;
 		public double XValue {
 			get { return _xValue;}
