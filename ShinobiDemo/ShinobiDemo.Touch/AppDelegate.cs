@@ -6,6 +6,7 @@ using MonoTouch.UIKit;
 using Cirrious.MvvmCross.Touch.Platform;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using Cirrious.MvvmCross.Touch.Views.Presenters;
 
 namespace ShinobiDemo.Touch
 {
@@ -21,8 +22,11 @@ namespace ShinobiDemo.Touch
 		{
 			// create a new window instance based on the screen size
 			window = new UIWindow (UIScreen.MainScreen.Bounds);
-			
-			var setup = new Setup (this, window);
+
+			// Create a single-screen iOS view app
+			var presenter = new SingleViewPresenter (this, window);
+
+			var setup = new Setup (this, presenter);
 			setup.Initialize ();
 
 			var startup = Mvx.Resolve<IMvxAppStart> ();
@@ -35,6 +39,5 @@ namespace ShinobiDemo.Touch
 			return true;
 		}
 	}
-
 }
 

@@ -4,17 +4,22 @@ using System.Linq;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using Cirrious.MvvmCross.Touch.Platform;
+using Cirrious.MvvmCross.Touch.Views.Presenters;
 
 namespace ShinobiDemo.Touch
 {
-	// The UIApplicationDelegate for the application. This class is responsible for launching the 
-	// User Interface of the application, as well as listening (and optionally responding) to 
-	// application events from iOS.
-
+	/// <summary>
+	/// The setup class for this app
+	/// </summary>
 	public class Setup : MvxTouchSetup
 	{
 		public Setup(MvxApplicationDelegate applicationDelegate, UIWindow window)
 			: base(applicationDelegate, window)
+		{
+		}
+
+		public Setup(MvxApplicationDelegate applicationDelegate, IMvxTouchViewPresenter viewPresenter)
+			: base(applicationDelegate, viewPresenter)
 		{
 		}
 
