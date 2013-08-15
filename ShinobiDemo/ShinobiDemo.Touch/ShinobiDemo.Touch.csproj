@@ -114,9 +114,9 @@
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="Setup.cs" />
-    <Compile Include="Controls\BoundShinobiChart.cs" />
     <Compile Include="Views\ChartView.cs" />
     <Compile Include="SingleViewPresenter.cs" />
+    <Compile Include="Controls\SChartDataSourceBinding.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
