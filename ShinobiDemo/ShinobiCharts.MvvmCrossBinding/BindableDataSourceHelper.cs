@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoTouch.Foundation;
 
-namespace ShinobiDemo.Touch
+namespace ShinobiCharts.MvvmCrossBinding
 {
 	public class BindableDataSourceHelper
 	{
@@ -13,7 +13,7 @@ namespace ShinobiDemo.Touch
 		{
 			private IList<SChartDataPoint> _dataPoints;
 
-			public ChartDataSource (IList<Object> data, Func<object, NSObject> xValueConvertor,
+			public ChartDataSource (IEnumerable<Object> data, Func<object, NSObject> xValueConvertor,
 			                        Func<object, NSObject> yValueConvertor)
 			{
 				if (data != null) {
@@ -23,7 +23,6 @@ namespace ShinobiDemo.Touch
 							YValue = yValueConvertor(o)
 						};
 					}).ToList ();
-
 				} else {
 					_dataPoints = new List<SChartDataPoint> ();
 				}
@@ -33,22 +32,22 @@ namespace ShinobiDemo.Touch
 
 			public override int GetNumberOfSeries (ShinobiChart chart)
 			{
-				throw new NotImplementedException ();
+				return 1;
 			}
 
 			public override SChartSeries GetSeries (ShinobiChart chart, int dataSeriesIndex)
 			{
-				throw new NotImplementedException ();
+				return new SChartLineSeries ();
 			}
 
 			public override int GetNumberOfDataPoints (ShinobiChart chart, int dataSeriesIndex)
 			{
-				throw new NotImplementedException ();
+				return _dataPoints.Count;
 			}
 
 			public override SChartData GetDataPoint (ShinobiChart chart, int dataIndex, int dataSeriesIndex)
 			{
-				throw new NotImplementedException ();
+				return _dataPoints [dataIndex];
 			}
 
 			#endregion
@@ -56,7 +55,7 @@ namespace ShinobiDemo.Touch
 		}
 
 		private ShinobiChart _chart;
-		private IList<object> _data;
+		private IEnumerable<object> _data;
 		private ChartDataSource _dataSource;
 		private string _xValueKey;
 		private string _yValueKey;
@@ -68,7 +67,7 @@ namespace ShinobiDemo.Touch
 			_yValueKey = yValueKey;
 		}
 
-		public IList<object> Data {
+		public IEnumerable<object> Data {
 			get { return _data; }
 			set {
 				_data = value;
@@ -80,21 +79,14 @@ namespace ShinobiDemo.Touch
 		{
 			_dataSource = new ChartDataSource (_data, o => {
 				var value = o.GetPropertyValue(_xValueKey);
-				return ConvertFromNetToObjC (value);
+				return value.ConvertToNSObject ();
 			}, o => {
 				var value = o.GetPropertyValue(_yValueKey);
-				return ConvertFromNetToObjC (value);
+				return value.ConvertToNSObject ();
 			});
 			_chart.DataSource = _dataSource;
 			_chart.RedrawChart ();
 		}
-
-		private NSObject ConvertFromNetToObjC(object o)
-		{
-			return (NSNumber)o;
-		}
-
-
 	}
 }
 

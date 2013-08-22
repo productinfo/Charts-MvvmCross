@@ -1,6 +1,6 @@
 using System;
 
-namespace ShinobiDemo.Touch
+namespace ShinobiCharts.MvvmCrossBinding
 {
 	public static class PropertyExtenstions
 	{

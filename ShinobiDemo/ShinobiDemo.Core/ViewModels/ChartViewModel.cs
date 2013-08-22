@@ -7,8 +7,8 @@ namespace ShinobiDemo.Core.ViewModels
 	public class ChartViewModel
 		: MvxViewModel
 	{
-		private IEnumerable<IEnumerable<DataPoint>> _source;
-		public IEnumerable<IEnumerable<DataPoint>> Source {
+		private IEnumerable<ExampleDataClass> _source;
+		public IEnumerable<ExampleDataClass> Source {
 			get { return _source; }
 			set {
 				_source = value;
@@ -28,19 +28,14 @@ namespace ShinobiDemo.Core.ViewModels
 
 		private void UpdateDataPoints()
 		{
-			var dps = new List<List<DataPoint>>();
 			// create the upper and lower component
-			var upperHarmonic = new List<DataPoint>();
-			var lowerHarmonic = new List<DataPoint>();
+			var dps = new List<ExampleDataClass>();
 			for (double phase = 0; phase < Math.PI; phase+= (Math.PI / 100))
 			{
-				upperHarmonic.Add(new DataPoint(phase, Math.Sin(phase * this.Frequency) + this.Frequency * 2.5));
-				lowerHarmonic.Add(new DataPoint(phase, Math.Sin(phase * this.Frequency + Math.PI) + this.Frequency * 2.5));
+				dps.Add (new ExampleDataClass (phase,
+				                               Math.Sin (phase * this.Frequency + Math.PI) + this.Frequency * 2.5,
+				                               Math.Sin (phase * this.Frequency) + this.Frequency * 2.5));
 			}
-
-			// add each to the collection
-			dps.Add(upperHarmonic);
-			dps.Add(lowerHarmonic);
 
 			// And then save this off - making sure to use the setter
 			this.Source = dps;
@@ -48,24 +43,31 @@ namespace ShinobiDemo.Core.ViewModels
 	}
 
 
-	public class DataPoint
+	public class ExampleDataClass
 	{
-		public DataPoint (double xValue, double yValue)
+		public ExampleDataClass (double time, double lower, double upper)
 		{
-			this.XValue = xValue;
-			this.YValue = yValue;
+			this.Time = time;
+			this.Lower = lower;
+			this.Upper = upper;
 		}
 
-		private double _xValue;
-		public double XValue {
-			get { return _xValue;}
-			set { _xValue = value;}
+		private double _time;
+		public double Time {
+			get { return _time;}
+			set { _time = value;}
 		}
 
-		private double _yValue;
-		public double YValue {
-			get { return _yValue;}
-			set { _yValue = value;}
+		private double _lower;
+		public double Lower {
+			get { return _lower;}
+			set { _lower = value;}
+		}
+
+		private double _upper;
+		public double Upper {
+			get { return _upper;}
+			set { _upper = value;}
 		}
 	}
 	 
