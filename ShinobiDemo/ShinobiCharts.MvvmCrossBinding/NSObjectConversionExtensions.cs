@@ -26,18 +26,9 @@ namespace ShinobiCharts.MvvmCrossBinding
 			else if (o is string) {
 				toReturn = (NSString)((string)o);
 			}
-			// And a catch-all for number types
-			else if (typeof(IConvertible).IsAssignableFrom (o.GetType ())) {
-				try {
-					// Most types will convert happily to a double
-					toReturn = (NSNumber)(((IConvertible)o).ToDouble (CultureInfo.InvariantCulture.NumberFormat));
-				} catch (InvalidCastException e) {
-					throw new InvalidCastException ("Unable to convert from .net type to objC type.", e);
-				}
-			}
-			// We can't do it
+			// And a catch-all
 			else {
-				throw new InvalidCastException ("Unable to convert from .net type to objC type.");
+				toReturn = NSObject.FromObject (o);
 			}
 
 			// Send the result back

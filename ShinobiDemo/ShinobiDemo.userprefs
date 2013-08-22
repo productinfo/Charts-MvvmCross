@@ -1,26 +1,21 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.IPhone.IPhoneSimulatorTarget.IPhone.6.1" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="ShinobiDemo.Touch/Controls/BindableDataSourceHelper.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="ShinobiDemo.Core/ViewModels/ChartViewModel.cs">
     <Files>
-      <File FileName="ShinobiDemo.Core/ViewModels/ChartViewModel.cs" Line="48" Column="3" />
+      <File FileName="ShinobiDemo.Core/ViewModels/ChartViewModel.cs" Line="49" Column="41" />
       <File FileName="ShinobiDemo.Touch/Views/ChartView.cs" Line="1" Column="1" />
       <File FileName="ShinobiDemo.Touch/Setup.cs" Line="1" Column="1" />
       <File FileName="ShinobiDemo.Touch/SingleViewPresenter.cs" Line="1" Column="1" />
-      <File FileName="ShinobiDemo.Touch/Controls/BindableDataSourceHelper.cs" Line="24" Column="8" />
-      <File FileName="ShinobiDemo.Touch/Controls/SChartDataSourceBinding.cs" Line="12" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
           <Node name="ShinobiDemo.Core" expanded="True">
-            <Node name="ViewModels" expanded="True" />
-          </Node>
-          <Node name="ShinobiDemo.Touch" expanded="True">
-            <Node name="Controls" expanded="True">
-              <Node name="BindableDataSourceHelper.cs" selected="True" />
+            <Node name="ViewModels" expanded="True">
+              <Node name="ChartViewModel.cs" selected="True" />
             </Node>
-            <Node name="Views" expanded="True" />
           </Node>
+          <Node name="ShinobiDemo.Touch" expanded="True" />
         </State>
       </Pad>
       <Pad Id="ClassPad">
