@@ -5,12 +5,12 @@
     <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1018839C-E43A-4193-A6E3-A6D75B402D80}</ProjectGuid>
+    <ProjectGuid>{2F1D6038-E7E8-4DE2-BB49-530F840CC6EF}</ProjectGuid>
     <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <RootNamespace>ShinobiDemo.Touch</RootNamespace>
+    <RootNamespace>ShinobiDemo.Touch.Tests</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>ShinobiDemoTouch</AssemblyName>
+    <AssemblyName>ShinobiDemoTouchTests</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
@@ -80,49 +80,22 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="monotouch" />
-    <Reference Include="Cirrious.CrossCore.Touch">
-      <HintPath>..\..\Mvx\Touch\Cirrious.CrossCore.Touch.dll</HintPath>
-    </Reference>
-    <Reference Include="Cirrious.CrossCore">
-      <HintPath>..\..\Mvx\Touch\Cirrious.CrossCore.dll</HintPath>
-    </Reference>
-    <Reference Include="Cirrious.MvvmCross">
-      <HintPath>..\..\Mvx\Touch\Cirrious.MvvmCross.dll</HintPath>
-    </Reference>
-    <Reference Include="Cirrious.MvvmCross.Binding.Touch">
-      <HintPath>..\..\Mvx\Touch\Cirrious.MvvmCross.Binding.Touch.dll</HintPath>
-    </Reference>
-    <Reference Include="Cirrious.MvvmCross.Binding">
-      <HintPath>..\..\Mvx\Touch\Cirrious.MvvmCross.Binding.dll</HintPath>
-    </Reference>
-    <Reference Include="Cirrious.MvvmCross.Touch">
-      <HintPath>..\..\Mvx\Touch\Cirrious.MvvmCross.Touch.dll</HintPath>
-    </Reference>
-    <Reference Include="ShinobiCharts">
-      <HintPath>..\ShinobiLib\ShinobiCharts.dll</HintPath>
-    </Reference>
+    <Reference Include="MonoTouch.NUnitLite" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
-    <Folder Include="Controls\" />
-    <Folder Include="Views\" />
+    <Folder Include="Tests\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
-    <Compile Include="AppDelegate.cs" />
-    <Compile Include="Setup.cs" />
-    <Compile Include="Views\ChartView.cs" />
-    <Compile Include="SingleViewPresenter.cs" />
+    <Compile Include="UnitTestAppDelegate.cs" />
+    <Compile Include="Tests\NSObjectConversionTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\ShinobiDemo.Core\ShinobiDemo.Core.csproj">
-      <Project>{49DADFFB-8F03-44BA-9A34-7109BB37A7C6}</Project>
-      <Name>ShinobiDemo.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ShinobiCharts.MvvmCrossBinding\ShinobiCharts.Touch.MvvmCrossBinding.csproj">
       <Project>{2CAE4983-56E5-474D-B7D4-D07B7B04613C}</Project>
       <Name>ShinobiCharts.Touch.MvvmCrossBinding</Name>
