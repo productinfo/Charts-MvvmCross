@@ -5,9 +5,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShinobiDemo.Core", "Shinobi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShinobiDemo.Touch", "ShinobiDemo.Touch\ShinobiDemo.Touch.csproj", "{1018839C-E43A-4193-A6E3-A6D75B402D80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShinobiDemo.Touch.Tests", "ShinobiDemo.Touch.Tests\ShinobiDemo.Touch.Tests.csproj", "{2F1D6038-E7E8-4DE2-BB49-530F840CC6EF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShinobiCharts.Touch.MvvmCrossBinding.Tests", "ShinobiDemo.Touch.Tests\ShinobiCharts.Touch.MvvmCrossBinding.Tests.csproj", "{2F1D6038-E7E8-4DE2-BB49-530F840CC6EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShinobiCharts.MvvmCrossBinding", "ShinobiCharts.MvvmCrossBinding\ShinobiCharts.MvvmCrossBinding.csproj", "{2CAE4983-56E5-474D-B7D4-D07B7B04613C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShinobiCharts.Touch.MvvmCrossBinding", "ShinobiCharts.MvvmCrossBinding\ShinobiCharts.Touch.MvvmCrossBinding.csproj", "{2CAE4983-56E5-474D-B7D4-D07B7B04613C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

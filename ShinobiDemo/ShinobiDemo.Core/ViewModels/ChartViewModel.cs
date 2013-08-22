@@ -4,11 +4,17 @@ using System.Collections.Generic;
 
 namespace ShinobiDemo.Core.ViewModels
 {
+	/// <summary>
+	/// View model for our harmonics chart
+	/// </summary>
 	public class ChartViewModel
 		: MvxViewModel
 	{
-		private IEnumerable<ExampleDataClass> _source;
-		public IEnumerable<ExampleDataClass> Source {
+		/// <summary>
+		/// The source data collection. This is bindable.
+		/// </summary>
+		private IList<ExampleDataClass> _source;
+		public IList<ExampleDataClass> Source {
 			get { return _source; }
 			set {
 				_source = value;
@@ -16,6 +22,9 @@ namespace ShinobiDemo.Core.ViewModels
 			}
 		}
 
+		/// <summary>
+		/// The frequency of our sine wave
+		/// </summary>
 		private double _frequency;
 		public double Frequency {
 			get { return _frequency;}
@@ -42,7 +51,9 @@ namespace ShinobiDemo.Core.ViewModels
 		}
 	}
 
-
+	/// <summary>
+	/// A domain object. This will represent a data point.
+	/// </summary>
 	public class ExampleDataClass
 	{
 		public ExampleDataClass (double time, double lower, double upper)
@@ -52,23 +63,9 @@ namespace ShinobiDemo.Core.ViewModels
 			this.Upper = upper;
 		}
 
-		private double _time;
-		public double Time {
-			get { return _time;}
-			set { _time = value;}
-		}
-
-		private double _lower;
-		public double Lower {
-			get { return _lower;}
-			set { _lower = value;}
-		}
-
-		private double _upper;
-		public double Upper {
-			get { return _upper;}
-			set { _upper = value;}
-		}
+		public double Time { get; private set; }
+		public double Lower { get; private set; }
+		public double Upper { get; private set; }
 	}
 	 
 }

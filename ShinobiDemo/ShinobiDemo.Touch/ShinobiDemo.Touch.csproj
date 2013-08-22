@@ -123,9 +123,9 @@
       <Project>{49DADFFB-8F03-44BA-9A34-7109BB37A7C6}</Project>
       <Name>ShinobiDemo.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ShinobiCharts.MvvmCrossBinding\ShinobiCharts.MvvmCrossBinding.csproj">
+    <ProjectReference Include="..\ShinobiCharts.MvvmCrossBinding\ShinobiCharts.Touch.MvvmCrossBinding.csproj">
       <Project>{2CAE4983-56E5-474D-B7D4-D07B7B04613C}</Project>
-      <Name>ShinobiCharts.MvvmCrossBinding</Name>
+      <Name>ShinobiCharts.Touch.MvvmCrossBinding</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
