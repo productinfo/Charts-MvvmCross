@@ -10,7 +10,7 @@ In this post we'll give a quick summary of the MVVM design pattern and its
 application to mobile development, including looking at MvvmCross. We'll also
 create a ShinobiChart suitable for use with MVVM data-binding.
 
-DIAGRAM
+![diagram](img/MVVMPattern.png?raw=true)
 
 ## Model-View-ViewModel
 
@@ -63,17 +63,37 @@ you've got it set up correctly to interface with Xamarin.
 We're going to build an app which shows sine waves of given frequencies, with
 a slider control which allows changing the frequency of the waves:
 
-SCREENSHOT HERE
+![image](img/screenshot.png?raw=true)
 
 In our `ShinobiDemo.Core` portable library project we'll create `ChartViewModel`,
-which can inherit from `MvxViewModel`. This allows property changed notifications
+which can inherit from `MvxViewModel`. This allows property change notifications
 to be processed correctly by the framework.
 
-We need 2 properties on the view-model - one to provide the frequency, one the
-resultant data points (which will be plotted):
+Our view-model has a collection of C# objects, which are from our data domain.
+These objects have properties on them which we will use to create the datapoints
+later on, but the important point here is that we know nothing about the
+technology which is going to display our view model - that's not the concern
+of the view-model layer. In our demo we'll use this `ExampleDataClass`:
 
-    private IEnumerable<IEnumerable<DataPoint>> _source;
-    public IEnumerable<IEnumerable<DataPoint>> Source {
+    public class ExampleDataClass
+    {
+        public ExampleDataClass (double time, double lower, double upper)
+        {
+            this.Time = time;
+            this.Lower = lower;
+            this.Upper = upper;
+        }
+
+        public double Time { get; private set; }
+        public double Lower { get; private set; }
+        public double Upper { get; private set; }
+    }
+
+We need 2 properties on the view-model itself - one to provide the frequency,
+one the resultant data objects (which will be plotted):
+
+    private IList<ExampleDataClass> _source;
+    public IList<ExampleDataClass> Source {
         get { return _source; }
         set {
             _source = value;
@@ -97,48 +117,21 @@ causes a call to `UpdateDataPoints`:
 
     private void UpdateDataPoints()
     {
-        var dps = new List<List<DataPoint>>();
         // create the upper and lower component
-        var upperHarmonic = new List<DataPoint>();
-        var lowerHarmonic = new List<DataPoint>();
+        var dps = new List<ExampleDataClass>();
         for (double phase = 0; phase < Math.PI; phase+= (Math.PI / 100))
         {
-            upperHarmonic.Add(new DataPoint(phase, Math.Sin(phase * this.Frequency) + this.Frequency * 2.5));
-            lowerHarmonic.Add(new DataPoint(phase, Math.Sin(phase * this.Frequency + Math.PI) + this.Frequency * 2.5));
+            dps.Add (new ExampleDataClass (phase,
+                                           Math.Sin (phase * this.Frequency + Math.PI) + this.Frequency * 2.5,
+                                           Math.Sin (phase * this.Frequency) + this.Frequency * 2.5));
         }
-
-        // add each to the collection
-        dps.Add(upperHarmonic);
-        dps.Add(lowerHarmonic);
 
         // And then save this off - making sure to use the setter
         this.Source = dps;
     }
 
 This method generates a set of data points which represent a wave at the
-specified frequency. It's important to note here that we've created a completely
-generic `DataPoint` class, which stores a pair of `double` values:
-
-    public class DataPoint
-    {
-        public DataPoint (double xValue, double yValue)
-        {
-            this.XValue = xValue;
-            this.YValue = yValue;
-        }
-
-        private double _xValue;
-        public double XValue {
-            get { return _xValue;}
-            set { _xValue = value;}
-        }
-
-        private double _yValue;
-        public double YValue {
-            get { return _yValue;}
-            set { _yValue = value;}
-        }
-    }
+specified frequency.
 
 If you're used to using ShinobiCharts you might wonder why we aren't just creating
 `SChartDataPoint` objects. This is due to code sharing. The view-models aren't
@@ -167,204 +160,100 @@ The first bit of code is registering concrete implementations of interfaces
 for the IoC container. From our point of view, we're most interested in the next
 line which registers our view model as the view model which starts the application.
 
-
-### Building a ShinobiChart for binding
+### Building a bindable data source helper
 
 MvvmCross provides bindings for all the standard UI controls within each of the
 platforms it supports. However, we want to display our results in a ShinobiChart,
-which does not have bindings. Therefore we'll create a subclass of `ShinobiChart`
-which will support binding. In our `ShinobiDemo.Touch` project we create a new
-class:
+which does not have bindings. We'll therefore create a datasource helper class
+which we can bind to, and which will provide the data to the chart in an
+appropriate fashion.
 
-    [Register("BoundShinobiChart")]
-    public class BoundShinobiChart : ShinobiChart
-    {
-        #region Member variables
-        private BoundDataSource _boundDataSource;
-        #endregion
+We've created a new iOS library project to contain this reusable class - 
+`ShinobiCharts.Touch.MvvmCrossBindings`, within which there is a class called
+`BindableDataSourceHelper`. This class has 2 properties:
 
-        #region Constructors
-        public BoundShinobiChart (IntPtr h)
-            : base(h)
-        {
-        }
-
-        public BoundShinobiChart(RectangleF frame)
-            : base(frame)
-        {
-            UpdateData ();
-        }
-
-        public BoundShinobiChart(RectangleF frame, SChartTheme theme)
-            : base(frame, theme)
-        {
-            UpdateData ();
-        }
-
-        public BoundShinobiChart(RectangleF frame, SChartAxisType xAxisType, SChartAxisType yAxisType)
-            : base(frame, xAxisType, yAxisType)
-        {
-            UpdateData();
-        }
-
-        #endregion
-
-        #region Properties for binding
-        private IEnumerable<IEnumerable<DataPoint>> _data;
-        public IEnumerable<IEnumerable<DataPoint>> Data {
-            get { return _data;}
-            set {
-                _data = value;
-                UpdateData ();
-            }
-        }
-        #endregion
-
-        private void UpdateData()
-        {
-            _boundDataSource = new BoundDataSource (_data);
-            this.DataSource = _boundDataSource;
-            this.RedrawChart ();
+    private IList<T> _data;
+    public IList<T> Data {
+        get { return _data; }
+        set {
+            _data = value;
+            DataUpdated ();
         }
     }
 
-This class is really quite simple. Firstly we expose all the appropriate
-constructors, within each we call `UpdateData()`. We also create a `Data` property
-whose type is the same as that exposed on the view-model. In the setter for this
-property we call the aforementioned `UpdateData()` method. `UpdateData()` creates
-a new datasource with the provided data, sets it as the chart's datasource and
-then redraws the chart.
-
-The missing part of this class is the `BoundDataSource` class. We create it as
-a private inner class:
-
-    #region Auxiliary classes
-    private class BoundDataSource : SChartDataSource
-    {
-        private IList<IList<SChartDataPoint>> _data;
-        private IList<SChartSeries> _series;
-
-        public BoundDataSource(IntPtr h) : base(h)
-        {
-        }
-
-        public BoundDataSource(IEnumerable<IEnumerable<DataPoint>> data)
-        {
-            if(data != null) {
-                _data = new List<IList<SChartDataPoint>> ();
-                foreach(var series in data) {
-                    var newSeries = series
-                        .Select(dp => new SChartDataPoint()
-                                { XValue = new NSNumber(dp.XValue),
-                                  YValue = new NSNumber(dp.YValue) })
-                        .ToList();
-                    _data.Add (newSeries);
-                    UpdateSeries();
-                }
-            } else {
-                _data = null;
-                _series = null;
-            }
-        }
-
-        private void UpdateSeries()
-        {
-            _series = new List<SChartSeries> ();
-            foreach (var seriesData in _data) {
-                _series.Add (new SChartLineSeries());
-            }
-        }
-
-        #region implemented abstract members of SChartDataSource
-        public override int GetNumberOfSeries (ShinobiChart chart)
-        {
-            if (_series != null) {
-                return _series.Count;
-            } else {
-                return 1;
-            }
-
-        }
-
-        public override SChartSeries GetSeries (ShinobiChart chart, int dataSeriesIndex)
-        {
-            if (_series != null) {
-                return _series [dataSeriesIndex];
-            } else {
-                return new SChartLineSeries();
-            }
-        }
-        public override int GetNumberOfDataPoints (ShinobiChart chart, int dataSeriesIndex)
-        {
-            if (_data != null) {
-                return _data [dataSeriesIndex].Count;
-            } else {
-                return 0;
-            }
-        }
-        public override SChartData GetDataPoint (ShinobiChart chart, int dataIndex, int dataSeriesIndex)
-        {
-            if (_data != null) {
-                return _data [dataSeriesIndex] [dataIndex];
-            } else {
-                return null;
-            }
-        }
-        #endregion
-    }
-    #endregion
-
-Although seemingly quite long, this class is a fairly trivial implementation of
-an `SChartDataSource` - the abstract class used to provide data to a ShinobiChart.
-It contains 2 private member variables - one to store the collection of series,
-the other the datapoints associated with these series. These are populated
-during construction:
-
-    public BoundDataSource(IEnumerable<IEnumerable<DataPoint>> data)
-    {
-        if(data != null) {
-            _data = new List<IList<SChartDataPoint>> ();
-            foreach(var series in data) {
-                var newSeries = series
-                    .Select(dp => new SChartDataPoint()
-                            { XValue = new NSNumber(dp.XValue),
-                              YValue = new NSNumber(dp.YValue) })
-                    .ToList();
-                _data.Add (newSeries);
-                UpdateSeries();
-            }
-        } else {
-            _data = null;
-            _series = null;
+    private Func<SChartSeries> _chartSeriesCreator;
+    public Func<SChartSeries> ChartSeries {
+        get{ return _chartSeriesCreator; }
+        set {
+            _chartSeriesCreator = value;
+            SeriesUpdated ();
         }
     }
 
-If we've got a valid data object we loop through the series it contains, converting
-the `DataPoint` objects to `SChartDataPoint` objects. This updates the `_data`
-member variable - we call `UpdateSeries()` to perform a similar process on the
-collection of `SChartSeries` objects:
+The `Data` property is a collection of generic C# objects - these are the domain
+objects from our view-model, and we'll bind it as such later on. The `ChartSeries`
+property is a lambda which returns an `SChartSeries` object. This will get called
+whenever our helper requires a new series object.
 
-    private void UpdateSeries()
+Both of these properties call respective update methods when they have been set:
+
+    private void DataUpdated ()
     {
-        _series = new List<SChartSeries> ();
-        foreach (var seriesData in _data) {
-            _series.Add (new SChartLineSeries());
+        // Replace the datasource with a new one
+        _dataSource = new ChartDataSource<T> (_data, ChartSeries(),
+                                           o => {
+            // Get the value for the specified property key and convert it to an NSObject
+            return o.GetPropertyValue (_xValueKey).ConvertToNSObject ();
+        },
+                                           o => {
+            return o.GetPropertyValue (_yValueKey).ConvertToNSObject ();
+        });
+        _chart.DataSource = _dataSource;
+        // Need to redraw to see the changes
+        _chart.RedrawChart ();
+    }
+
+    private void SeriesUpdated ()
+    {
+        // If we don't have a datasource then we don't need to do anything
+        if (_dataSource != null) {
+            _dataSource.Series = ChartSeries();
+            _chart.RedrawChart ();
         }
     }
 
-In this simple example we only allow line series, and `double,double` data points.
-This could be extended to be more generic.
+The important features of these methods are:
+- When the data is updated we create a new `ChartDataSource` object. This is a
+private inner class, which is used to interface with the chart. It accepts the
+data list, a chart series and a couple of lambdas which explain how to extract
+appropriate values from the domain objects.
+- After we've set the `DataSource` property on the chart we need to redraw the
+chart.
+- When the series is updated we don't need a new datasource - we can provide the
+new series and redraw the chart.
 
-The remainder of this class represents the required override abstract methods for
-an `SChartDataSource` - each of which does as expected - pulling the relevant
-objects from the member variables we set up at construction time.
+We find the x and y values from the domain object by looking up the value of
+a property whose name is provided at construction time:
+
+    public BindableDataSourceHelper (ShinobiChart chart,
+                                     Func<SChartSeries> seriesCreator,
+                                     string xValueKey, string yValueKey)
+    {
+        ...
+    }
+
+There are a couple of other classes in this project which provide extension methods
+on `System.Object`:
+- `PropertyExtensions` provides `GetPropertyValue()` which uses reflection to
+obtain the value of a property with a given (string) name.
+- `NSObjectConversionExtensions` provides `ConvertToNSObject()` which is a method
+which turns an unknown .net object to the best approximation `NSObject` subclass.
 
 
-### Wiring the BoundShinobiChart with the view model
+### Using the BindableDataSource
 
-The final part of this puzzle is wiring the view-model up with the newly created
-`BoundShinobiChart`. We create a view which will contain an instance of a
-`BoundShinobiChart`, and a `UISlider`:
+In a new `ShinobiDemo.Touch` single-view iOS application project we'll create the
+view to bind to the view-model. We'll create 2 UI components in a standard manner:
 
 
     [Register("ChartView")]
@@ -374,36 +263,57 @@ The final part of this puzzle is wiring the view-model up with the newly created
         {
             base.ViewDidLoad ();
 
-            var chart = new BoundShinobiChart (View.Bounds, SChartAxisType.Number, SChartAxisType.Number);
+            // Create a chart
+            var chart = new ShinobiChart (new RectangleF (0, 40, View.Bounds.Width, View.Bounds.Height-40),
+                                          SChartAxisType.Number, SChartAxisType.Number);
+            chart.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
+            // Create a datasource helper
+            _dsHelper = new BindableDataSourceHelper<ExampleDataClass> (chart,
+                            () => { return new SChartLineSeries (); },
+                            "Time", "Lower"); 
             Add (chart);
 
-            var slider = new UISlider (new RectangleF (10, 120, 300, 40));
+            // Create a UISlider
+            var slider = new UISlider (new RectangleF (0, 0, View.Bounds.Width, 40));
             slider.MinValue = 0;
             slider.MaxValue = 5;
+            slider.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
             Add (slider);
         }
     }
 
-Here we've created the 2 controls and added them as subviews. Binding is done
-differently on each of the supported platforms - most use additions to the XML
-layout specification to bind a particular control to a property on the view-model
-but this isn't an option for iOS. Therefore binding is done in code:
+Here we've created the 2 controls and added them as subviews. We created the
+datasource helper specifying:
+- The `ShinobiChart` we wish it to manage the data for
+- A lambda describing how to create a new `SChartSeries` object
+- The names of the properties on our domain objects we wish to use as the x and
+y values for the data points.
+
+
+## Binding to the view-model
+
+Binding is done differently on each of the supported platforms - most use additions
+to the XML layout specification to bind a particular control to a property on the
+view-model but this isn't an option for iOS. Therefore binding is done in code:
 
     public override void ViewDidLoad () 
     {
         ...
 
-        var set = this.CreateBindingSet<ChartView, ShinobiDemo.Core.ViewModels.ChartViewModel> ();
-        set.Bind (chart).For (s => s.Data).To (vm => vm.Source).OneWay();
+        // Create the binding 
+        var set = this.CreateBindingSet<ChartView, ChartViewModel> ();
+        // Bind the datasource helper to the view model
+        set.Bind (_dsHelper).For (s => s.Data).To (vm => vm.Source).OneWay();
+        // And the UISlider
         set.Bind (slider).To (vm => vm.Frequency);
         set.Apply ();
     }
 
 We've created a binding set from the current view to the viewmodel, and then
-created the individual bindings for the controls. The chart is a little more
-complicated because we've got to specify which property on the chart gets bound
+created the individual bindings for the controls. The datasource helper is a little more
+complicated because we've got to specify which property on the helper gets bound
 to which property on the view-model, and also that the binding is one-way - i.e.
-it's not possible for the chart data object to update the view-model's data.
+it's not possible for the helper object to update the view-model's data.
 The `UISlider` binding is a little easier - it's two-way and the default binding
 on the control is the one we want to use.
 
@@ -466,21 +376,15 @@ generation logic. We would just need to write an equivalent subclass of the
 ShinobiChart suitable for databinding, and then create the views using the XML
 schema.
 
-There are lots of ways in which this simple demo could be improved:
-- We currently only look at binding chart data - it would be trivial to extend
-this to chart title, axis labels etc.
-- This project only supports `double, double` datapoints, and line series. A more
-generally useful version would allow all the options supported by ShinobiCharts.
-- The `BoundShinobiChart` could be wrapped up in an MvvmCross plugin to ease use
-across different apps.
+The `BindableDataSourceHelper` class can be used without modification for different
+series types, and with no modification for different domain objects. You can
+pull the code into your solution and give it a go.
 
 Feel free to fork this project on Github and investigate these potential
 improvments. Or suggest other ways it could be improved - hit me up on github
 or twitter [@iwantmyrealname](https://twitter.com/iwantmyrealname).
 
 
-
-
-
-
-
+---
+The MvvmPattern image used is Creative Commons licensed by Ugaya40 (Own work)
+CC-BY-SA-3.0, via Wikimedia Commons
