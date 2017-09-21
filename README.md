@@ -5,7 +5,7 @@ Model-View-ViewModel is a software design pattern which suits multi-platform UI
 projects really well. In this project we create an iOS app using MvvmCross, a
 popular open source implementation of the MVVM pattern in Xamarin.iOS.
 
-![Screenshot](img/screenshot.png?raw=true)
+![Screenshot](screenshot.png?raw=true)
 
 
 Directory structure
